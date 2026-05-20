@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\EventController as EventAdminController;
 
 
 // Rute User Area
@@ -19,4 +20,8 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/events', [EventController::class, 'indexAdmin'])->name('events.index');
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/transactions', function () {return "Halaman Transactions";})->name('transactions.index');
+});
+
+Route::prefix('admin')->name('admin.')->group(function () {
+Route::resource('events', EventAdminController::class);
 });
