@@ -17,11 +17,7 @@ Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
 // Rute Admin Area
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/events', [EventController::class, 'indexAdmin'])->name('events.index');
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-Route::get('/transactions', function () {return "Halaman Transactions";})->name('transactions.index');
-});
-
-Route::prefix('admin')->name('admin.')->group(function () {
 Route::resource('events', EventAdminController::class);
+Route::resource('categories', CategoryController::class);
+Route::get('/transactions', function () {return "Halaman Transactions";})->name('transactions.index');
 });
