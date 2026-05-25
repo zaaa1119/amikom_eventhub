@@ -57,9 +57,13 @@
             <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Poster Event (Opsional)</label>
             <input type="file" name="poster" accept="image/*" class="w-full px-5 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium">
             @if($event->poster_path)
-            <p class="text-sm text-slate-500 mt-2">Poster saat ini: <a
-                    href="{{ asset('storage/' . $event->poster_path) }}" target="_blank"
-                    class="text-indigo-600 hover:underline">Lihat</a></p>
+            <div class="mt-3">
+                <p class="text-sm text-slate-500 mb-2">Poster saat ini:</p>
+
+                <img src="{{ asset('storage/' . $event->poster_path) }}"
+                    alt="Poster Event"
+                    class="w-40 h-40 object-cover rounded-2xl border shadow-sm">
+            </div>
             @endif
             @error('poster') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
         </div>

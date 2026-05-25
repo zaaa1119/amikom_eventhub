@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -32,7 +33,6 @@ class EventController extends Controller
 
     public function store(\Illuminate\Http\Request $request)
     {
-        // Menerapkan validasi data request dari pengguna
         $data = $request->validate([
             'category_id' => 'required',
             'title' => 'required|string|max:255',
@@ -40,12 +40,20 @@ class EventController extends Controller
             'date' => 'required|date',
             'location' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'stock' => 'required|numeric'
+            'stock' => 'required|numeric',
+            'poster' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
         ]);
 
-        // Menyimpan data yang telah divalidasi ke dalam tabel menggunakan Model
+        // 🔥 HANDLE UPLOAD POSTER
+        if ($request->hasFile('poster')) {
+            $data['poster_path'] = $request->file('poster')->store('poster', 'public');
+        }
+
+        // SIMPAN KE DATABASE
         \App\Models\Event::create($data);
-        return redirect()->route('admin.events.index')->with('success', 'Data Event berhasil ditambahkan.');
+
+        return redirect()->route('admin.events.index')
+            ->with('success', 'Data Event berhasil ditambahkan.');
     }
 
     public function destroy(Event $event)
@@ -60,7 +68,7 @@ class EventController extends Controller
         return view('admin.events.edit', compact('event', 'categories'));
     }
 
-    public function update(\Illuminate\Http\Request $request, Event $event)
+    public function update(Request $request, Event $event)
     {
         $data = $request->validate([
             'category_id' => 'required',
@@ -69,9 +77,25 @@ class EventController extends Controller
             'date' => 'required|date',
             'location' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'stock' => 'required|numeric'
+            'stock' => 'required|numeric',
+            'poster' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
         ]);
+
+        // 🔥 JIKA ADA POSTER BARU
+        if ($request->hasFile('poster')) {
+
+            // hapus poster lama (biar tidak numpuk)
+            if ($event->poster_path && Storage::disk('public')->exists($event->poster_path)) {
+                Storage::disk('public')->delete($event->poster_path);
+            }
+
+            // simpan poster baru
+            $data['poster_path'] = $request->file('poster')->store('poster', 'public');
+        }
+
         $event->update($data);
-        return redirect()->route('admin.events.index')->with('success', 'Rincian data event berhasil diperbarui.');
+
+        return redirect()->route('admin.events.index')
+            ->with('success', 'Rincian data event berhasil diperbarui.');
     }
 }
