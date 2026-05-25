@@ -21,5 +21,5 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::resource('events', EventAdminController::class);
 Route::resource('categories', CategoryController::class);
 Route::resource('partners', PartnerController::class);
-Route::get('/transactions', function () {return "Halaman Transactions";})->name('transactions.index');
+Route::get('/transactions', function () {return view('admin.transaction');})->name('transactions.index');
 });
