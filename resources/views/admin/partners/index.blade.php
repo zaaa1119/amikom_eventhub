@@ -3,11 +3,32 @@
 @section('page_title', 'Partners')
 @section('page_subtitle', 'Kelola Partners di sini')
 @section('content')
-<div class="mb-4 text-right">
+<div class="mb-4 flex justify-between items-center">
+
+    <!-- SEARCH -->
+    <form method="GET"
+        action="{{ route('admin.partners.index') }}"
+        class="flex gap-2">
+
+        <input type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Cari partner..."
+            class="border px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+        <button type="submit"
+            class="px-4 py-2 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition">
+            Search
+        </button>
+
+    </form>
+
+    <!-- BUTTON TAMBAH -->
     <a href="{{ route('admin.partners.create') }}"
         class="px-5 py-3 bg-indigo-600 text-white rounded-xl font-semibold">
         + Tambah Partner
     </a>
+
 </div>
 
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -24,6 +45,7 @@
         </thead>
 
         <tbody>
+            @if($partners->count() > 0)
 
             @foreach($partners as $partner)
             <tr class="border-t">
@@ -80,6 +102,16 @@
 
             </tr>
             @endforeach
+
+            @else
+
+            <tr>
+                <td colspan="4" class="p-6 text-center text-gray-500">
+                    🚫 Partner tidak ditemukan. Coba cek penulisan nama.
+                </td>
+            </tr>
+
+            @endif
 
         </tbody>
 
