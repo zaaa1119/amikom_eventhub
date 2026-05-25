@@ -16,7 +16,10 @@ class EventController extends Controller
 
         // SEARCH
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $query->where('title', 'like', '%' . $request->search . '%')
+                ->orWhereHas('category', function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->search . '%');
+                });
         }
 
         // PAGINATION
