@@ -12,8 +12,10 @@ use App\Http\Controllers\Admin\PartnerController;
 // Rute User Area
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/event', [EventController::class, 'show'])->name('events.show');
+Route::get('/event-detail', function () {return view('event-detail');})->name('event.detail');
 Route::get('/checkout', [EventController::class, 'checkout'])->name('checkout');
 Route::get('/my-ticket', [EventController::class, 'ticket'])->name('ticket');
+Route::get('/partners', [\App\Http\Controllers\HomeController::class, 'partners'])->name('partners.index');
 
 // Rute Admin Area
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {

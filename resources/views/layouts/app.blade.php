@@ -32,9 +32,10 @@
             <span class="text-xl font-bold tracking-tight">AmikomEventHub</span>
         </div>
         <div class="hidden md:flex gap-8 font-medium">
-            <a href="#" class="text-indigo-600">Jelajahi</a>
+            <a href="/" class="{{ request()->is('/') ? 'text-indigo-600' : 'hover:text-indigo-600 transition' }}">Jelajahi</a>
             <a href="#" class="hover:text-indigo-600 transition">Kategori</a>
             <a href="#" class="hover:text-indigo-600 transition">Tentang Kami</a>
+            <a href="{{ route('partners.index') }}"class="{{ request()->routeIs('partners.index') ? 'text-indigo-600' : 'hover:text-indigo-600 transition' }}">Partner</a>
         </div>
         <!-- <div class="flex gap-3">
             <button class="px-5 py-2.5 rounded-xl font-semibold hover:bg-slate-200 transition">Login</button>
@@ -61,7 +62,7 @@
             <div>
                 <h4 class="text-white font-bold mb-6">Navigasi</h4>
                 <ul class="space-y-4">
-                    <li><a href="#" class="hover:text-white transition">Home</a></li>
+                    <li><a href="/" class="hover:text-white transition">Home</a></li>
                     <li><a href="#" class="hover:text-white transition">Semua Event</a></li>
                     <li><a href="#" class="hover:text-white transition">Cara Bayar</a></li>
                 </ul>

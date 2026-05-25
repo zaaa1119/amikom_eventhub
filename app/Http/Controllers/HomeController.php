@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Category;
+use App\Models\Partner;
 
 class HomeController extends Controller
 {
-     public function index(Request $request)
+    public function index(Request $request)
     {
         // 1. Ambil semua jenis kategori untuk tampilan filter tab button 
         $categories = Category::all();
@@ -17,8 +18,8 @@ class HomeController extends Controller
         // - Gunakan Eager loading `category`
         // - Hanya tampilkan kegiatan dengan jadwal yang belum kedaluwarsa (>= hari ini)
         $query = Event::with('category')
-                      ->where('date', '>=', now())
-                      ->orderBy('date', 'asc');
+            ->where('date', '>=', now())
+            ->orderBy('date', 'asc');
 
         // 3. Filter query jika url memiliki parameter pencarian spesifik ?category=...
         if ($request->has('category') && $request->category != '') {
@@ -34,5 +35,10 @@ class HomeController extends Controller
         return view('welcome', compact('events', 'categories'));
     }
 
-}
+    public function partners()
+    {
+        $partners = Partner::latest()->get();
 
+        return view('partners', compact('partners'));
+    }
+}
