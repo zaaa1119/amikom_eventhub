@@ -9,10 +9,18 @@ use App\Models\Category;
 
 class EventController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Memakai relasi dan pengaturan limit paginasi (10 entri per halaman)
-        $events = \App\Models\Event::with('category')->latest()->paginate(10);
+        $query = Event::with('category');
+
+        // SEARCH
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        // PAGINATION
+        $events = $query->latest()->paginate(10);
+
         return view('admin.events.index', compact('events'));
     }
 

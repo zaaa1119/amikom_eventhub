@@ -5,11 +5,33 @@
 @section('page_subtitle', 'Buat dan atur acara seru Anda di sini.')
 
 @section('content')
-<div class="mb-4 text-right">
-    <a href="{{ route('admin.events.create') }}" class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition">
-        + Tambah Event Baru
+<div class="mb-4 flex justify-between items-center">
+
+    <!-- SEARCH -->
+    <form method="GET"
+        action="{{ route('admin.events.index') }}"
+        class="flex gap-2">
+
+        <input type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Cari kategori..."
+            class="border px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+        <button type="submit"
+            class="px-4 py-2 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition">
+            Search
+        </button>
+
+    </form>
+
+    <!-- BUTTON TAMBAH -->
+    <a href="{{ route('admin.events.create') }}"
+        class="px-5 py-3 bg-indigo-600 text-white rounded-xl font-semibold">
+        + Tambah Event
     </a>
 </div>
+
 
 <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
@@ -24,6 +46,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y border-t">
+                @if($events->count() > 0)
                 @forelse($events as $index => $event)
                 <tr class="hover:bg-slate-50/50 transition">
                     <td class="px-8 py-6 font-bold text-slate-400">{{$events->firstItem() + $index }}</td>
@@ -64,6 +87,15 @@
                     <td colspan="5" class="px-8 py-10 text-center text-slate-500">Belum ada acara yang ditambahkan.</td>
                 </tr>
                 @endforelse
+                @else
+
+                <tr>
+                    <td colspan="4" class="p-6 text-center text-gray-500">
+                        🚫 Event tidak ditemukan
+                    </td>
+                </tr>
+
+                @endif
             </tbody>
         </table>
     </div>

@@ -107,7 +107,7 @@
 
             <tr>
                 <td colspan="4" class="p-6 text-center text-gray-500">
-                    🚫 Partner tidak ditemukan. Coba cek penulisan nama.
+                    🚫 Partner tidak ditemukan
                 </td>
             </tr>
 
