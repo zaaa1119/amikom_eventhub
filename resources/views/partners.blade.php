@@ -12,10 +12,18 @@
 
         @foreach($partners as $partner)
 
-        <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col items-center justify-center gap-3 hover:shadow-md transition">
+
+            <!-- Logo -->
             <img src="{{ asset('storage/' . $partner->logo_url) }}"
                  class="h-16 object-contain"
                  alt="{{ $partner->name }}">
+
+            <!-- Nama -->
+            <p class="text-sm font-semibold text-slate-700 text-center">
+                {{ $partner->name }}
+            </p>
+
         </div>
 
         @endforeach
