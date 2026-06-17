@@ -37,18 +37,19 @@ class EventController extends Controller
     public function store(\Illuminate\Http\Request $request)
     {
         $data = $request->validate([
-            'category_id' => 'required',
+            'category_id' => 'required|exists:categories,id',
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'date' => 'required|date',
             'location' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'stock' => 'required|numeric',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|numeric|min:1',
             'poster' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
         ]);
 
         // 🔥 HANDLE UPLOAD POSTER
         if ($request->hasFile('poster')) {
+            // Simpan ke direktori storage/app/public/posters
             $data['poster_path'] = $request->file('poster')->store('poster', 'public');
         }
 
@@ -61,8 +62,16 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
+        // Hapus poster dari storage
+        if ($event->poster_path && Storage::disk('public')->exists($event->poster_path)) {
+            Storage::disk('public')->delete($event->poster_path);
+        }
+
+        // Hapus data event
         $event->delete();
-        return redirect()->route('admin.events.index')->with('success', 'Data event berhasil dihapus secara permanen.');
+
+        return redirect()->route('admin.events.index')
+            ->with('success', 'Data event berhasil dihapus secara permanen.');
     }
 
     public function edit(Event $event)
@@ -74,13 +83,13 @@ class EventController extends Controller
     public function update(Request $request, Event $event)
     {
         $data = $request->validate([
-            'category_id' => 'required',
+            'category_id' => 'required|exists:categories,id',
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'date' => 'required|date',
             'location' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'stock' => 'required|numeric',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|numeric|min:1',
             'poster' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
         ]);
 
