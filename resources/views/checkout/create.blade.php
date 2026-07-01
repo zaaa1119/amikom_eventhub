@@ -3,7 +3,7 @@
  @section('content')
  <main class="max-w-3xl mx-auto px-6 py-20">
      <div class="mb-12">
-         <a href="{{ route('events.show', $event->id) }}" class="text-indigo-600 font-bold flex items-center gap-2 mb-6">
+         <a href="{{ route('event.detail', $event->id) }}" class="text-indigo-600 font-bold flex items-center gap-2 mb-6">
              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
              </svg>
@@ -89,7 +89,7 @@
                  </button>
                  <p class="text-center text-xs text-slate-400">Dengan menekan tombol di atas, Anda menyetujui Syarat
                      & Ketentuan kami.</p>
-             </form>
+            </form>
          </div>
 
      </div>
