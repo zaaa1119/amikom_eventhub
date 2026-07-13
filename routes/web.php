@@ -24,6 +24,8 @@ Route::get('/my-ticket', [EventController::class, 'ticket'])
     ->name('ticket');
 Route::get('/partners', [HomeController::class, 'partners'])
     ->name('partners.index');
+Route::get('/payment/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'payment'])->name('checkout.payment');
+Route::get('/success/{order_id}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
 
 // Login Admin
