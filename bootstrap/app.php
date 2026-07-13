@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         Authenticate::redirectUsing(function (Request $request) {
             return route('admin.login');
         });
+
+        $middleware->validateCsrfTokens(except: [
+            '/midtrans/callback', // Mengecualikan route webhook Midtrans dari blokir CSRF
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

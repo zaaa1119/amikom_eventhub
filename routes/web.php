@@ -52,3 +52,6 @@ Route::prefix('admin')
         Route::get('/transactions', [TransactionController::class, 'index'])
             ->name('transactions.index');
     });
+
+// Midtrans Webhook
+Route::post('/midtrans/callback', [\App\Http\Controllers\MidtransWebhookController::class, 'handle']);
