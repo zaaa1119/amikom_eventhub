@@ -12,7 +12,10 @@ class TransactionController extends Controller
     {
         // Mengambil transaksi terbaru dengan pembatasan 20 baris/halaman
         $transactions = Transaction::with('event')->latest()->paginate(20);
-        return view('admin.transactions.index', compact('transactions'));
 
+        // Untuk statistik (ambil semua data)
+        $allTransactions = Transaction::with('event')->get();
+
+        return view('admin.transactions.index', compact('transactions', 'allTransactions'));
     }
 }

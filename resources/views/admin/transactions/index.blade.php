@@ -8,31 +8,35 @@
 @php
 $paidStatuses = ['success', 'settlement'];
 
-$totalRevenue = $transactions->whereIn('status', $paidStatuses)->sum('total_price');
-$totalPending = $transactions->where('status', 'pending')->sum('total_price');
-$totalSuccess = $transactions->whereIn('status', $paidStatuses)->count();
-$totalAll = $transactions->count();
-$successRate = $totalAll > 0 ? round(($totalSuccess / $totalAll) * 100, 1) : 0;
-@endphp
+$totalTransactions = $allTransactions->count();
 
-<!-- SUMMARY DASHBOARD -->
+$totalRevenue = $allTransactions
+    ->whereIn('status', $paidStatuses)
+    ->sum('total_price');
 
-@php
-$paidStatuses = ['success', 'settlement'];
+$totalSuccess = $allTransactions
+    ->whereIn('status', $paidStatuses)
+    ->count();
 
-$totalTransactions = $transactions->count();
-$totalRevenue = $transactions->whereIn('status', $paidStatuses)->sum('total_price');
-$totalSuccess = $transactions->whereIn('status', $paidStatuses)->count();
-$totalPending = $transactions->where('status', 'pending')->count();
-$totalFailed = $transactions->whereIn('status', ['failed', 'cancel', 'expired'])->count();
+$totalPending = $allTransactions
+    ->filter(fn($trx) => strtolower($trx->status) === 'pending')
+    ->count();
+
+$totalFailed = $allTransactions
+    ->whereIn('status', ['failed', 'cancel', 'expired'])
+    ->count();
 
 $successRate = $totalTransactions > 0
-? round(($totalSuccess / $totalTransactions) * 100, 1)
-: 0;
+    ? round(($totalSuccess / $totalTransactions) * 100, 1)
+    : 0;
 
 $pendingRate = $totalTransactions > 0
-? round(($totalPending / $totalTransactions) * 100, 1)
-: 0;
+    ? round(($totalPending / $totalTransactions) * 100, 1)
+    : 0;
+
+$failedRate = $totalTransactions > 0
+    ? round(($totalFailed / $totalTransactions) * 100, 1)
+    : 0;
 @endphp
 
 <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
@@ -79,7 +83,7 @@ $pendingRate = $totalTransactions > 0
         <h2 class="text-2xl font-black text-rose-600 mt-2">
             {{ $totalFailed }}
         </h2>
-        <p class="text-xs text-slate-400 mt-2">Cancelled / expired / failed</p>
+        <p class="text-xs text-slate-400 mt-2">{{ $failedRate }}% Cancelled / expired</p>
     </div>
 
 </div>
