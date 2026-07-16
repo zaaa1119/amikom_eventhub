@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\EventController as EventAdminController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\PengurusController;
 
 // User Area
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -55,3 +57,8 @@ Route::prefix('admin')
 
 // Midtrans Webhook
 Route::post('/midtrans/callback', [\App\Http\Controllers\MidtransWebhookController::class, 'handle']);
+
+
+//pengurus dan jabatan
+Route::resource('jabatan', JabatanController::class);
+Route::resource('pengurus', PengurusController::class);
