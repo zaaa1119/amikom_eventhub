@@ -12,10 +12,28 @@ use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\PengurusController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\AuthController as UserAuthController;
 
 // User Area
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/event/{event}', [EventController::class, 'detail'])->name('event.detail');
+
+Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [UserAuthController::class, 'login'])->name('login.post');
+
+Route::get('/register', [UserAuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [UserAuthController::class, 'register'])->name('register.post');
+
+Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
+
+Route::get('/forgot-password', [UserAuthController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/forgot-password', [UserAuthController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [UserAuthController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/reset-password', [UserAuthController::class, 'resetPassword'])->name('password.update');
+
+Route::get('/auth/google/redirect', [GoogleController::class, 'redirect'])->name('google.redirect');
+Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
 
 // Checkout (versi terbaru dari main)
 Route::get('/checkout/{event}', [CheckoutController::class, 'create'])
@@ -43,7 +61,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // Admin Area
 Route::prefix('admin')
     ->name('admin.')
-    ->middleware(['auth'])
+    ->middleware(['auth', 'admin'])
     ->group(function () {
         Route::get('/', [DashboardController::class, 'index'])
             ->name('dashboard');

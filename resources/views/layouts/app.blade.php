@@ -31,20 +31,48 @@
                 AH</div>
             <span class="text-xl font-bold tracking-tight">AmikomEventHub</span>
         </div>
-        <div class="hidden md:flex gap-8 font-medium">
+        <div class="hidden md:flex gap-8 font-medium items-center">
             <a href="/" class="{{ request()->is('/') ? 'text-indigo-600' : 'hover:text-indigo-600 transition' }}">Jelajahi</a>
             <a href="#" class="hover:text-indigo-600 transition">Kategori</a>
             <a href="#" class="hover:text-indigo-600 transition">Tentang Kami</a>
-            <a href="{{ route('partners.index') }}"class="{{ request()->routeIs('partners.index') ? 'text-indigo-600' : 'hover:text-indigo-600 transition' }}">Partner</a>
+            <a href="{{ route('partners.index') }}" class="{{ request()->routeIs('partners.index') ? 'text-indigo-600' : 'hover:text-indigo-600 transition' }}">Partner</a>
+            @auth
+            <details class="relative">
+                <summary class="list-none cursor-pointer w-11 h-11 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-lg select-none">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </summary>
+                <div class="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-50">
+                    <p class="px-3 py-2 text-sm font-semibold text-slate-700 truncate">{{ Auth::user()->name }}</p>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                            class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition">
+                            Keluar
+                        </button>
+                    </form>
+                </div>
+            </details>
+            @else
+            <a href="{{ route('login') }}"
+                class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">
+                Masuk
+            </a>
+            @endauth
         </div>
-        <!-- <div class="flex gap-3">
-            <button class="px-5 py-2.5 rounded-xl font-semibold hover:bg-slate-200 transition">Login</button>
-            <button
-                class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">Daftar</button>
-        </div> -->
+
+        </div>
     </nav>
-	
-	@yield('content')
+
+    @if(session('error'))
+    <div class="max-w-4xl mx-auto mt-4 px-4">
+        <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+            {{ session('error') }}
+        </div>
+    </div>
+    @endif
+    @yield('content')
+
+
 
     <!-- Footer -->
     <footer class="bg-indigo-900 text-indigo-100 py-20 px-6 mt-20">
