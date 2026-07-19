@@ -40,7 +40,7 @@ class GoogleController extends Controller
         }
 
         Auth::login($user);
-
+        $user->claimPendingTransaction();
         return redirect()->intended('/');
     }
 }

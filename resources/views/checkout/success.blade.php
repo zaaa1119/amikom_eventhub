@@ -13,7 +13,21 @@
             Pembayaran untuk pesanan <strong>{{ $transaction->order_id }}</strong> sedang diproses atau telah berhasil.
             E-Ticket akan dikirim ke email Anda (<strong>{{ $transaction->customer_email }}</strong>) setelah pembayaran terkonfirmasi lunas.
         </p>
-        <a href="{{ route('home') }}" class="inline-block px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition">
+        @guest
+        <div class="mt-6 p-5 bg-indigo-50 rounded-2xl text-left">
+            <p class="font-bold text-indigo-700 mb-1">Simpan tiket ini ke akunmu</p>
+            <p class="text-sm text-indigo-600 mb-4">Biar tiket ini otomatis masuk ke Riwayat kamu dan bisa kamu review setelah acaranya selesai.</p>
+            <div class="flex gap-3">
+                <a href="{{ route('login') }}" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition">
+                    Masuk
+                </a>
+                <a href="{{ route('register') }}" class="px-5 py-2.5 bg-white border-2 border-indigo-200 text-indigo-600 rounded-xl font-bold text-sm hover:bg-indigo-50 transition">
+                    Daftar
+                </a>
+            </div>
+        </div>
+        @endguest
+        <a href="{{ route('home') }}" class="inline-block px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition mt-8">
             Kembali ke Beranda
         </a>
     </div>

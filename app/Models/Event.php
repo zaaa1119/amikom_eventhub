@@ -7,8 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     protected $fillable = [
-        'category_id', 'title', 'description', 'date',
-        'location', 'price', 'stock', 'poster_path'
+        'category_id',
+        'partner_id',
+        'title',
+        'description',
+        'date',
+        'location',
+        'price',
+        'stock',
+        'poster_path'
     ];
 
     protected $casts = [
@@ -17,7 +24,17 @@ class Event extends Model
 
     // Menandakan atribut: 1 Event harus terpaut pada satu wujud Kategori
     public function category()
-        {
-            return $this->belongsTo(Category::class);
-        }
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

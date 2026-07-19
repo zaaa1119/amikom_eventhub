@@ -43,6 +43,10 @@
                 </summary>
                 <div class="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-50">
                     <p class="px-3 py-2 text-sm font-semibold text-slate-700 truncate">{{ Auth::user()->name }}</p>
+                    <a href="{{ route('riwayat') }}"
+                        class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+                        Riwayat
+                    </a>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button type="submit"

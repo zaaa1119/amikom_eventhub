@@ -26,6 +26,11 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $user->claimPendingTransaction();
+            
             return redirect()->intended(route('home'));
         }
 
@@ -52,7 +57,7 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
-
+        $user->claimPendingTransaction();
         return redirect()->route('home');
     }
 

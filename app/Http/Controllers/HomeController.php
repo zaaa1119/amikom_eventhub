@@ -18,7 +18,7 @@ class HomeController extends Controller
         // - Gunakan Eager loading `category`
         // - Hanya tampilkan kegiatan dengan jadwal yang belum kedaluwarsa (>= hari ini)
         $query = Event::with('category')
-            ->where('date', '>=', now())
+           // ->where('date', '>=', now())
             ->orderBy('date', 'asc');
 
         // 3. Filter query jika url memiliki parameter pencarian spesifik ?category=...
@@ -37,7 +37,7 @@ class HomeController extends Controller
 
     public function partners()
     {
-        $partners = Partner::latest()->get();
+        $partners = Partner::withCount('events')->latest()->get();
 
         return view('partners', compact('partners'));
     }

@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'google_id',
     ];
@@ -45,5 +46,30 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function claimPendingTransaction(): void
+    {
+        $orderId = session('pending_claim_order_id');
+
+        if (! $orderId) {
+            return;
+        }
+
+        \App\Models\Transaction::where('order_id', $orderId)
+            ->whereNull('user_id')
+            ->update(['user_id' => $this->id]);
+
+        session()->forget('pending_claim_order_id');
     }
 }
