@@ -6,15 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Partner;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class PartnerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        $query = Partner::query();
+        $query = Partner::with('organizerAccount');
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
@@ -25,95 +24,87 @@ class PartnerController extends Controller
         return view('admin.partners.index', compact('partners'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('admin.partners.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required',
             'logo' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'organizer_email' => 'nullable|required_if:create_login,1|email|unique:users,email',
+            'organizer_password' => 'nullable|required_if:create_login,1|min:8|confirmed',
         ]);
 
-        // upload file
         $path = $request->file('logo')->store('partners', 'public');
 
-        Partner::create([
+        $partner = Partner::create([
             'name' => $request->name,
             'logo_url' => $path,
         ]);
+
+        if ($request->boolean('create_login')) {
+            try {
+                $this->createOrganizerAccount($partner, $request);
+            } catch (\Illuminate\Database\QueryException $e) {
+                return back()->withErrors(['organizer_email' => 'Partner ini sudah punya akun, tidak bisa dibuat lagi.']);
+            }
+        }
 
         return redirect()->route('admin.partners.index')
             ->with('success', 'Partner berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+    public function show(string $id) {}
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        $partner = Partner::findOrFail($id);
+        $partner = Partner::with('organizerAccount')->findOrFail($id);
+
         return view('admin.partners.edit', compact('partner'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $partner = Partner::findOrFail($id);
+        $hasOrganizer = $partner->organizerAccount()->exists();
 
         $request->validate([
             'name' => 'required',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'organizer_email' => 'nullable|required_if:create_login,1|email|unique:users,email',
+            'organizer_password' => 'nullable|required_if:create_login,1|min:8|confirmed',
         ]);
 
-        $data = [
-            'name' => $request->name,
-        ];
+        $data = ['name' => $request->name];
 
-        // kalau upload logo baru
         if ($request->hasFile('logo')) {
-
-            // hapus file lama (opsional tapi bagus)
             if ($partner->logo_url) {
                 Storage::disk('public')->delete($partner->logo_url);
             }
-
-            $path = $request->file('logo')->store('partners', 'public');
-            $data['logo_url'] = $path;
+            $data['logo_url'] = $request->file('logo')->store('partners', 'public');
         }
 
         $partner->update($data);
+
+        if (! $hasOrganizer && $request->boolean('create_login')) {
+            try {
+                $this->createOrganizerAccount($partner, $request);
+            } catch (\Illuminate\Database\QueryException $e) {
+                return back()->withErrors(['organizer_email' => 'Partner ini sudah punya akun, tidak bisa dibuat lagi.']);
+            }
+        }
 
         return redirect()->route('admin.partners.index')
             ->with('success', 'Partner berhasil diupdate');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $partner = Partner::findOrFail($id);
 
-        // hapus file logo
         if ($partner->logo_url) {
             Storage::disk('public')->delete($partner->logo_url);
         }
@@ -122,5 +113,18 @@ class PartnerController extends Controller
 
         return redirect()->route('admin.partners.index')
             ->with('success', 'Partner berhasil dihapus');
+    }
+
+    private function createOrganizerAccount(Partner $partner, Request $request): void
+    {
+        $organizer = new User([
+            'name' => $partner->name,
+            'email' => $request->organizer_email,
+            'partner_id' => $partner->id,
+        ]);
+        $organizer->password = Hash::make($request->organizer_password);
+        $organizer->role = 'organizer';
+        $organizer->email_verified_at = now();
+        $organizer->save();
     }
 }

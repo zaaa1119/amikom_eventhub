@@ -22,7 +22,7 @@ class PartnerController extends Controller
             ->take(5)
             ->get();
 
-        return view('partner-profile', compact('partner', 'avgRating', 'reviewCount', 'latestReviews'));
+        return view('partner.profile', compact('partner', 'avgRating', 'reviewCount', 'latestReviews'));
     }
 
     public function reviews(Request $request, Partner $partner)
@@ -40,6 +40,6 @@ class PartnerController extends Controller
 
         $reviews = $query->latest()->paginate(10);
 
-        return view('partner-reviews', compact('partner', 'reviews', 'scope'));
+        return view('partner.reviews', compact('partner', 'reviews', 'scope'));
     }
 }

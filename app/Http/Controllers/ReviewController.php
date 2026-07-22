@@ -12,7 +12,7 @@ class ReviewController extends Controller
     {
         $this->authorizeReview($transaction);
 
-        return view('review-create', compact('transaction'));
+        return view('review.create', compact('transaction'));
     }
 
     public function store(Request $request, Transaction $transaction)

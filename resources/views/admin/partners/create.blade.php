@@ -20,6 +20,28 @@
             <input type="file" name="logo" class="w-full border p-2 rounded" required>
         </div>
 
+        <div class="mb-4 p-4 bg-slate-50 rounded-xl">
+            <label class="flex items-center gap-2 font-bold mb-3">
+                <input type="checkbox" name="create_login" value="1" id="create_login" onchange="document.getElementById('login_fields').classList.toggle('hidden', !this.checked)">
+                Buatkan akun login untuk penyelenggara ini
+            </label>
+
+            <div id="login_fields" class="hidden space-y-3">
+                <div>
+                    <label class="block mb-1 text-sm">Email Login</label>
+                    <input type="email" name="organizer_email" class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="block mb-1 text-sm">Password</label>
+                    <input type="password" name="organizer_password" class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="block mb-1 text-sm">Konfirmasi Password</label>
+                    <input type="password" name="organizer_password_confirmation" class="w-full border rounded-xl px-4 py-3">
+                </div>
+            </div>
+        </div>
+
         <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">
             Simpan
         </button>

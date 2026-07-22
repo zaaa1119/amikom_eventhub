@@ -9,7 +9,7 @@ class EventController extends Controller
 {
     public function detail(Event $event)
     {
-        return view('event-detail', compact('event'));
+        return view('event.detail', compact('event'));
     }
 
     public function checkout()
@@ -47,6 +47,6 @@ class EventController extends Controller
         $reviewCount = $event->reviews()->count();
         $reviews = $event->reviews()->with('user')->latest()->paginate(10);
 
-        return view('event-reviews', compact('event', 'avgRating', 'reviewCount', 'reviews'));
+        return view('event.reviews', compact('event', 'avgRating', 'reviewCount', 'reviews'));
     }
 }

@@ -23,8 +23,13 @@ class User extends Authenticatable
         'phone',
         'password',
         'google_id',
+        'partner_id',
     ];
 
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

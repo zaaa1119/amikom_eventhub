@@ -16,6 +16,8 @@ use App\Http\Controllers\PengurusController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\AuthController as UserAuthController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Organizer\DashboardController as OrganizerDashboardController;
+use App\Http\Controllers\Organizer\EventController as OrganizerEventController;
 
 
 
@@ -95,3 +97,13 @@ Route::post('/midtrans/callback', [\App\Http\Controllers\MidtransWebhookControll
 //pengurus dan jabatan
 Route::resource('jabatan', JabatanController::class);
 Route::resource('pengurus', PengurusController::class);
+
+// Organizer Area
+Route::prefix('organizer')
+    ->name('organizer.')
+    ->middleware(['auth', 'organizer'])
+    ->group(function () {
+        Route::get('/', [OrganizerDashboardController::class, 'index'])->name('dashboard');
+        Route::resource('events', OrganizerEventController::class);
+    });
+    

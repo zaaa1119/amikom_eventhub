@@ -39,6 +39,6 @@ class HomeController extends Controller
     {
         $partners = Partner::withCount('events')->latest()->get();
 
-        return view('partners', compact('partners'));
+        return view('partner.index', compact('partners'));
     }
 }

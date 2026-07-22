@@ -12,4 +12,14 @@ class Partner extends Model
     {
         return $this->hasMany(Event::class);
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function organizerAccount()
+    {
+        return $this->hasOne(User::class)->where('role', 'organizer');
+    }
 }
