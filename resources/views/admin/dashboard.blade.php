@@ -48,6 +48,79 @@
          <h3 class="text-2xl font-black">{{ $pendingOrders }} Pesanan</h3>
      </div>
  </div>
+
+ <div class="bg-white rounded-2xl shadow p-6 mt-8">
+     <div class="flex justify-between items-center mb-6">
+         <h3 class="font-bold text-lg">Statistik Platform</h3>
+         <div class="flex items-center gap-2">
+             <a href="?period=year" class="px-3 py-1.5 rounded-lg text-sm font-bold {{ $period === 'year' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600' }}">
+                 Per Tahun
+             </a>
+             <a href="?period=month&month={{ $selectedMonth }}" class="px-3 py-1.5 rounded-lg text-sm font-bold {{ $period === 'month' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600' }}">
+                 Per Bulan
+             </a>
+             @if($period === 'month')
+             <form method="GET" class="inline">
+                 <input type="hidden" name="period" value="month">
+                 <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()"
+                     class="border rounded-lg px-2 py-1 text-sm">
+             </form>
+             @endif
+         </div>
+     </div>
+
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+         <div>
+             <p class="text-sm font-bold text-slate-500 mb-2">Pertumbuhan User</p>
+             <div class="relative h-64">
+                 <canvas id="userChart"></canvas>
+             </div>
+         </div>
+         <div>
+             <p class="text-sm font-bold text-slate-500 mb-2">Pertumbuhan User</p>
+             <div class="relative h-64">
+                 <canvas id="eventChart"></canvas>
+             </div>
+         </div>
+         <div>
+             <p class="text-sm font-bold text-slate-500 mb-2">Pertumbuhan User</p>
+             <div class="relative h-64">
+                 <canvas id="transactionChart"></canvas>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ <script>
+     const userData = @json($userGrowth);
+     const eventData = @json($eventGrowth);
+     const transactionData = @json($transactionGrowth);
+
+     function buildLineChart(canvasId, data, label, color) {
+         new Chart(document.getElementById(canvasId), {
+             type: 'line',
+             data: {
+                 labels: Object.keys(data),
+                 datasets: [{
+                     label: label,
+                     data: Object.values(data),
+                     borderColor: color,
+                     tension: 0.3
+                 }]
+             },
+             options: {
+                 display: false,
+                 maintainAspectRatio: false
+             }
+
+         });
+     }
+
+     buildLineChart('userChart', userData, 'User Baru', '#6366f1');
+     buildLineChart('eventChart', eventData, 'Event Baru', '#10b981');
+     buildLineChart('transactionChart', transactionData, 'Pendapatan', '#f59e0b');
+ </script>
+
  <!-- Latest Sales Table -->
  <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
      <div class="p-8 border-b flex justify-between items-center">

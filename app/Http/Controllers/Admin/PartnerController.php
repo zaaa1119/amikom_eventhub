@@ -57,7 +57,37 @@ class PartnerController extends Controller
             ->with('success', 'Partner berhasil ditambahkan');
     }
 
-    public function show(string $id) {}
+    public function show(string $id)
+    {
+        $partner = Partner::with('organizerAccount')->findOrFail($id);
+
+        $eventIds = $partner->events()->pluck('id');
+
+        $totalEvent = $eventIds->count();
+        $totalTiketTerjual = \App\Models\Transaction::whereIn('event_id', $eventIds)
+            ->whereIn('status', ['settlement', 'success'])
+            ->count();
+        $totalPendapatan = \App\Models\Transaction::whereIn('event_id', $eventIds)
+            ->whereIn('status', ['settlement', 'success'])
+            ->sum('total_price');
+        $avgRating = \App\Models\Review::whereIn('event_id', $eventIds)->avg('rating');
+        $reviewCount = \App\Models\Review::whereIn('event_id', $eventIds)->count();
+
+        $events = $partner->events()->withCount([
+            'reviews',
+            // hitung tiket terjual per event
+        ])->latest()->get();
+
+        return view('admin.partners.show', compact(
+            'partner',
+            'totalEvent',
+            'totalTiketTerjual',
+            'totalPendapatan',
+            'avgRating',
+            'reviewCount',
+            'events'
+        ));
+    }
 
     public function edit(string $id)
     {

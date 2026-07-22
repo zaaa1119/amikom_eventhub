@@ -97,6 +97,22 @@
                             </svg>
 
                         </a>
+
+                        <!-- Lihat Performa -->
+                        <a href="{{ route('admin.partners.show', $partner->id) }}"
+                            class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition"
+                            title="Lihat Performa">
+
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M3 17l6-6 4 4 8-8M21 21H3V3">
+                                </path>
+                            </svg>
+
+                        </a>
+
                     </div>
                 </td>
 

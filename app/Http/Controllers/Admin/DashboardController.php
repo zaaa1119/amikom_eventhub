@@ -27,6 +27,44 @@ class DashboardController extends Controller
         // 5. Menyertakan 5 daftar riwayat pesanan (History) paling mutakhir di panel
         $recentTransactions = Transaction::with('event')->latest()->take(5)->get();
 
-        return view('admin.dashboard', compact('totalRevenue', 'ticketsSold', 'activeEvents', 'pendingOrders', 'recentTransactions'));
+        // 6. Menyertakan grafik pertumbuhan pengguna dan acara
+        $period = request('period', 'year');
+        $selectedMonth = request('month', now()->format('Y-m'));
+
+        if ($period === 'month') {
+            $start = \Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->startOfMonth();
+            $end = $start->copy()->endOfMonth();
+            $groupFormat = 'DATE(created_at)';
+        } else {
+            $start = now()->subMonths(11)->startOfMonth();
+            $end = now()->endOfMonth();
+            $groupFormat = 'DATE_FORMAT(created_at, "%Y-%m")';
+        }
+
+        $userGrowth = \App\Models\User::selectRaw("$groupFormat as label, COUNT(*) as jumlah")
+            ->whereBetween('created_at', [$start, $end])
+            ->groupBy('label')->orderBy('label')->pluck('jumlah', 'label');
+
+        $eventGrowth = \App\Models\Event::selectRaw("$groupFormat as label, COUNT(*) as jumlah")
+            ->whereBetween('created_at', [$start, $end])
+            ->groupBy('label')->orderBy('label')->pluck('jumlah', 'label');
+
+        $transactionGrowth = \App\Models\Transaction::selectRaw("$groupFormat as label, SUM(total_price) as jumlah")
+            ->whereIn('status', ['settlement', 'success'])
+            ->whereBetween('created_at', [$start, $end])
+            ->groupBy('label')->orderBy('label')->pluck('jumlah', 'label');
+
+        return view('admin.dashboard', compact(
+            'totalRevenue',
+            'ticketsSold',
+            'activeEvents',
+            'pendingOrders',
+            'recentTransactions',
+            'userGrowth',
+            'eventGrowth',
+            'period',
+            'selectedMonth',
+            'transactionGrowth'
+        ));
     }
 }
