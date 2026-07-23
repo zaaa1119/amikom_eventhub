@@ -105,5 +105,5 @@ Route::prefix('organizer')
     ->group(function () {
         Route::get('/', [OrganizerDashboardController::class, 'index'])->name('dashboard');
         Route::resource('events', OrganizerEventController::class);
+        Route::get('/transactions', [\App\Http\Controllers\Organizer\TransactionController::class, 'index'])->name('transactions.index');
     });
-    
