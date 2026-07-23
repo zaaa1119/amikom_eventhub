@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -111,6 +113,15 @@
             &copy; 2026 AmikomEventHub. Built with Laravel & Tailwind CSS.
         </div>
     </footer>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(() => console.log('Service Worker terdaftar'))
+                    .catch((err) => console.error('Gagal daftar Service Worker:', err));
+            });
+        }
+    </script>
 
 </body>
 
