@@ -21,28 +21,52 @@ class CheckoutController extends Controller
 
     public function store(Request $request, Event $event)
     {
-        // 1. Validasi Input Kredensial Pelanggan
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|email|max:255',
             'customer_phone' => 'required|string|max:20',
         ]);
 
-        // 1b. Simpan nomor HP ke akun kalau user login, belum punya nomor, dan centang checkbox simpan
-        if (auth()->check() && ! auth()->user()->phone && $request->boolean('save_phone')) {
-            auth()->user()->update(['phone' => $request->customer_phone]);
-        }
-
-        // 2. Cegah Check-out Jika Tiket Habis
         if ($event->stock <= 0) {
             return back()->with('error', 'Mohon maaf, tiket untuk acara ini sudah habis.');
         }
 
-        // 3. Generate Kode TRX (Unik)
-        $orderId = 'TRX-' . time() . '-' . Str::random(5);
-        $totalPrice = $event->price + 5000; // Menambahkan biaya admin (dummy)
+        if (auth()->check() && ! auth()->user()->phone && $request->boolean('save_phone')) {
+            auth()->user()->update(['phone' => $request->customer_phone]);
+        }
 
-        // 4. Merekam Transaksi ke Database
+        $orderId = 'TRX-' . time() . '-' . Str::random(5);
+
+        // --- Bypass Midtrans khusus event gratis ---
+        if ($event->price == 0) {
+            $transaction = Transaction::create([
+                'event_id' => $event->id,
+                'user_id' => auth()->id(),
+                'order_id' => $orderId,
+                'customer_name' => $request->customer_name,
+                'customer_email' => $request->customer_email,
+                'customer_phone' => $request->customer_phone,
+                'total_price' => 0,
+                'status' => 'settlement',
+            ]);
+
+            $event->decrement('stock');
+
+            try {
+                \Illuminate\Support\Facades\Mail::to($transaction->customer_email)
+                    ->send(new \App\Mail\EventTicketMail($transaction));
+            } catch (\Exception $e) {
+                \Log::error('Gagal mengirim email E-Ticket event gratis: ' . $e->getMessage());
+            }
+
+            session(['pending_claim_order_id' => $orderId]);
+
+            return redirect()->route('checkout.success', $orderId);
+        }
+
+        // --- Alur normal (event berbayar), tetap seperti sebelumnya ---
+        $totalPrice = $event->price + 5000;
+
         $transaction = Transaction::create([
             'event_id' => $event->id,
             'user_id' => auth()->id(),
@@ -101,6 +125,15 @@ class CheckoutController extends Controller
 
     public function success($order_id)
     {
+        $categories = \App\Models\Category::all();
+        $transaction = Transaction::with('event')->where('order_id', $order_id)->firstOrFail();
+
+        // Transaksi event gratis sudah lunas dari awal, tidak pernah lewat Midtrans -- skip pengecekan API
+        if (in_array(strtolower($transaction->status), ['success', 'settlement'])) {
+            session(['pending_claim_order_id' => $order_id]);
+            return view('checkout.success', compact('transaction', 'categories'));
+        }
+
         session(['pending_claim_order_id' => $order_id]);
 
         // Mengambil daftar kategori untuk keperluan menu footer
