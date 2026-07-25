@@ -30,8 +30,12 @@ class AuthController extends Controller
             /** @var \App\Models\User $user */
             $user = Auth::user();
             $user->claimPendingTransaction();
-            
-            return redirect()->intended(route('home'));
+
+            return match ($user->role) {
+                'admin' => redirect()->route('admin.dashboard'),
+                'organizer' => redirect()->route('organizer.dashboard'),
+                default => redirect()->intended(route('home')),
+            };
         }
 
         return back()->withErrors(['email' => 'Email atau password salah.'])->onlyInput('email');
