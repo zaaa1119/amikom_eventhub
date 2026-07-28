@@ -70,19 +70,24 @@ class PartnerController extends Controller
         $totalPendapatan = \App\Models\Transaction::whereIn('event_id', $eventIds)
             ->whereIn('status', ['settlement', 'success'])
             ->sum('total_price');
+        $totalPendapatanShort = $this->formatRupiahSingkat($totalPendapatan);
         $avgRating = \App\Models\Review::whereIn('event_id', $eventIds)->avg('rating');
         $reviewCount = \App\Models\Review::whereIn('event_id', $eventIds)->count();
 
-        $events = $partner->events()->withCount([
-            'reviews',
-            // hitung tiket terjual per event
-        ])->latest()->get();
+        $events = $partner->events()
+            ->withCount(['reviews'])
+            ->withCount(['transactions as tiket_terjual' => function ($query) {
+                $query->whereIn('status', ['settlement', 'success']);
+            }])
+            ->latest()
+            ->get();
 
         return view('admin.partners.show', compact(
             'partner',
             'totalEvent',
             'totalTiketTerjual',
             'totalPendapatan',
+            'totalPendapatanShort',
             'avgRating',
             'reviewCount',
             'events'
@@ -131,6 +136,26 @@ class PartnerController extends Controller
             ->with('success', 'Partner berhasil diupdate');
     }
 
+    private function createOrganizerAccount(Partner $partner, Request $request): void
+    {
+        $organizer = new User([
+            'name' => $partner->name,
+            'email' => $request->organizer_email,
+            'partner_id' => $partner->id,
+        ]);
+        $organizer->password = Hash::make($request->organizer_password);
+        $organizer->role = 'organizer';
+        $organizer->email_verified_at = now();
+        $organizer->save();
+    }
+
+    private function formatRupiahSingkat($number)
+    {
+        if ($number >= 1_000_000_000) return 'Rp' . number_format($number / 1_000_000_000, 1) . ' M';
+        if ($number >= 1_000_000) return 'Rp' . number_format($number / 1_000_000, 1) . ' Jt';
+        return 'Rp' . number_format($number, 0, ',', '.');
+    }
+
     public function destroy(string $id)
     {
         $partner = Partner::findOrFail($id);
@@ -145,16 +170,5 @@ class PartnerController extends Controller
             ->with('success', 'Partner berhasil dihapus');
     }
 
-    private function createOrganizerAccount(Partner $partner, Request $request): void
-    {
-        $organizer = new User([
-            'name' => $partner->name,
-            'email' => $request->organizer_email,
-            'partner_id' => $partner->id,
-        ]);
-        $organizer->password = Hash::make($request->organizer_password);
-        $organizer->role = 'organizer';
-        $organizer->email_verified_at = now();
-        $organizer->save();
-    }
+    
 }

@@ -16,30 +16,58 @@ class PartnerController extends Controller
         $avgRating = \App\Models\Review::whereIn('event_id', $eventIds)->avg('rating');
         $reviewCount = \App\Models\Review::whereIn('event_id', $eventIds)->count();
 
-        $latestReviews = \App\Models\Review::whereIn('event_id', $eventIds)
-            ->with(['user', 'event'])
-            ->latest()
-            ->take(5)
+        $upcomingEvents = $partner->events()->where('date', '>=', now())->orderBy('date')->get();
+        $pastEvents = $partner->events()->where('date', '<', now())
+            ->withCount('reviews')
+            ->orderByDesc('date')
             ->get();
 
-        return view('partner.profile', compact('partner', 'avgRating', 'reviewCount', 'latestReviews'));
+        return view('partner.profile', compact(
+            'partner',
+            'avgRating',
+            'reviewCount',
+            'upcomingEvents',
+            'pastEvents'
+        ));
     }
 
     public function reviews(Request $request, Partner $partner)
-    {
-        abort_if($partner->events()->count() === 0, 404);
+{
+    abort_if($partner->events()->count() === 0, 404);
 
-        $scope = $request->query('scope', 'all'); // 'all' atau id event tertentu
+    $eventIds = $partner->events()->pluck('id');
 
-        $query = \App\Models\Review::whereIn('event_id', $partner->events()->pluck('id'))
-            ->with(['user', 'event']);
+    $avgRating = \App\Models\Review::whereIn('event_id', $eventIds)->avg('rating');
+    $reviewCount = \App\Models\Review::whereIn('event_id', $eventIds)->count();
 
-        if ($scope !== 'all') {
-            $query->where('event_id', $scope);
-        }
-
-        $reviews = $query->latest()->paginate(10);
-
-        return view('partner.reviews', compact('partner', 'reviews', 'scope'));
+    $breakdown = [];
+    for ($star = 5; $star >= 1; $star--) {
+        $count = \App\Models\Review::whereIn('event_id', $eventIds)->where('rating', $star)->count();
+        $breakdown[$star] = [
+            'count' => $count,
+            'percent' => $reviewCount > 0 ? round($count / $reviewCount * 100) : 0,
+        ];
     }
+
+    $sort = $request->query('sort', 'terbaru');
+    $onlyPhoto = $request->boolean('foto');
+
+    $query = \App\Models\Review::whereIn('event_id', $eventIds)->with(['user', 'event']);
+
+    if ($onlyPhoto) {
+        $query->whereNotNull('photo_path');
+    }
+
+    if ($sort === 'tertinggi') {
+        $query->orderByDesc('rating')->latest();
+    } else {
+        $query->latest();
+    }
+
+    $reviews = $query->paginate(10)->withQueryString();
+
+    return view('partner.reviews', compact(
+        'partner', 'reviews', 'avgRating', 'reviewCount', 'breakdown', 'sort', 'onlyPhoto'
+    ));
+}
 }
