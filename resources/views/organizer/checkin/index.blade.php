@@ -1,6 +1,6 @@
 @extends('layouts.organizer')
 @section('page_title', 'Check-in Scanner')
-@section('page_subtitle', 'Arahkan kamera ke QR Code tiket peserta')
+@section('page_subtitle', 'Check-in untuk: ' . $event->title)
 
 @section('content')
 <div class="max-w-md mx-auto">
@@ -26,27 +26,35 @@
         if (isProcessing) return;
         isProcessing = true;
 
-        fetch('{{ route("organizer.checkin.scan") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            },
-            body: JSON.stringify({ order_id: decodedText }),
-        })
-        .then(res => res.json())
-        .then(data => {
-            showResult(data.status, data.message, data.name ? `Nama: ${data.name}` : '');
-        })
-        .finally(() => {
-            setTimeout(() => { isProcessing = false; }, 2500); // jeda 2.5 detik sebelum bisa scan lagi
-        });
+        
+        fetch('{{ route("organizer.checkin.scan", $event) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    order_id: decodedText
+                }),
+            })
+            .then(res => res.json())
+            .then(data => {
+                showResult(data.status, data.message, data.name ? `Nama: ${data.name}` : '');
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    isProcessing = false;
+                }, 2500); // jeda 2.5 detik sebelum bisa scan lagi
+            });
     }
 
     const scanner = new Html5Qrcode("reader");
-    scanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
+    scanner.start({
+            facingMode: "environment"
+        }, {
+            fps: 10,
+            qrbox: 250
+        },
         onScanSuccess
     );
 </script>

@@ -14,6 +14,7 @@ class Transaction extends Model
         'customer_email',
         'customer_phone',
         'total_price',
+        'checked_in',
         'status',
         'snap_token'
     ];
