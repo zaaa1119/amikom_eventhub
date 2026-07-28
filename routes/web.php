@@ -104,4 +104,5 @@ Route::prefix('organizer')
         Route::get('/', [OrganizerDashboardController::class, 'index'])->name('dashboard');
         Route::resource('events', OrganizerEventController::class);
         Route::get('/transactions', [\App\Http\Controllers\Organizer\TransactionController::class, 'index'])->name('transactions.index');
+        Route::resource('coupons', \App\Http\Controllers\Organizer\CouponController::class);
     });

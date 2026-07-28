@@ -11,12 +11,35 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
-    public function create(Event $event)
+    public function create(Request $request, Event $event)
     {
-        // Mengambil daftar kategori untuk keperluan menu footer
         $categories = \App\Models\Category::all();
 
-        return view('checkout.create', compact('event', 'categories'));
+        $coupon = null;
+        $discount = 0;
+        $couponError = null;
+
+        if ($request->filled('coupon')) {
+            $coupon = \App\Models\Coupon::where('code', strtoupper($request->coupon))
+                ->where('partner_id', $event->partner_id)
+                ->first();
+
+            if (! $coupon) {
+                $couponError = 'Kode kupon tidak ditemukan.';
+            } elseif ($coupon->valid_until && now()->gt($coupon->valid_until->endOfDay())) {
+                $couponError = 'Kupon ini sudah kadaluarsa.';
+            } elseif ($coupon->usage_limit && $coupon->used_count >= $coupon->usage_limit) {
+                $couponError = 'Kupon ini sudah mencapai batas maksimal penggunaan.';
+            } elseif ($coupon->min_purchase && $event->price < $coupon->min_purchase) {
+                $couponError = 'Kupon ini minimal berlaku untuk pembelian Rp' . number_format($coupon->min_purchase, 0, ',', '.') . '.';
+            } else {
+                $discount = $coupon->calculateDiscount($event->price);
+            }
+        }
+
+        $totalPrice = $event->price > 0 ? ($event->price + 5000 - $discount) : 0;
+
+        return view('checkout.create', compact('event', 'categories', 'coupon', 'discount', 'couponError', 'totalPrice'));
     }
 
     public function store(Request $request, Event $event)
@@ -64,8 +87,23 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.success', $orderId);
         }
 
-        // --- Alur normal (event berbayar), tetap seperti sebelumnya ---
-        $totalPrice = $event->price + 5000;
+        // Alur normal (event berbayar), tetap seperti sebelumnya
+        $coupon = null;
+        $discount = 0;
+
+        if ($request->filled('coupon_code')) {
+            $coupon = \App\Models\Coupon::where('code', $request->coupon_code)
+                ->where('partner_id', $event->partner_id)
+                ->first();
+
+            if ($coupon && $coupon->isValid($event->price)) {
+                $discount = $coupon->calculateDiscount($event->price);
+            } else {
+                $coupon = null; // jaga-jaga kalau ternyata kupon sudah tidak valid lagi pas submit (misal keburu habis kuota)
+            }
+        }
+
+        $totalPrice = max(0, $event->price + 5000 - $discount);
 
         $transaction = Transaction::create([
             'event_id' => $event->id,
@@ -77,6 +115,10 @@ class CheckoutController extends Controller
             'total_price' => $totalPrice,
             'status' => 'Pending',
         ]);
+
+        if ($coupon) {
+            $coupon->increment('used_count');
+        }
 
         // --- INTEGRASI SNAP MIDTRANS ---
 

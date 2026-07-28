@@ -22,4 +22,9 @@ class Partner extends Model
     {
         return $this->hasOne(User::class)->where('role', 'organizer');
     }
+
+    public function coupons()
+    {
+        return $this->hasMany(Coupon::class);
+    }
 }
