@@ -12,8 +12,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
+
         // 1. Menjumlahkan semua nominal total_price dari kolom Transaksi Lunas
-        $totalRevenue = Transaction::whereIn('status', ['settlement', 'success'])->sum('total_price');
+        $totalPendapatan = Transaction::whereIn('status', ['settlement', 'success'])->sum('total_price');
 
         // 2. Menghitung Berapa orang tamu yang tiketnya sudah Lunas
         $ticketsSold = Transaction::whereIn('status', ['settlement', 'success'])->count();
@@ -54,8 +55,11 @@ class DashboardController extends Controller
             ->whereBetween('created_at', [$start, $end])
             ->groupBy('label')->orderBy('label')->pluck('jumlah', 'label');
 
+        $totalPendapatanShort = $this->formatRupiahSingkat($totalPendapatan);
+
         return view('admin.dashboard', compact(
-            'totalRevenue',
+            'totalPendapatan',
+            'totalPendapatanShort',
             'ticketsSold',
             'activeEvents',
             'pendingOrders',
@@ -66,5 +70,12 @@ class DashboardController extends Controller
             'selectedMonth',
             'transactionGrowth'
         ));
+    }
+
+    private function formatRupiahSingkat($number)
+    {
+        if ($number >= 1_000_000_000) return 'Rp' . number_format($number / 1_000_000_000, 1) . ' M';
+        if ($number >= 1_000_000) return 'Rp' . number_format($number / 1_000_000, 1) . ' Jt';
+        return 'Rp' . number_format($number, 0, ',', '.');
     }
 }

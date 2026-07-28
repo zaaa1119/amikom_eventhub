@@ -16,6 +16,18 @@ class TransactionController extends Controller
         // Untuk statistik (ambil semua data)
         $allTransactions = Transaction::with('event')->get();
 
-        return view('admin.transactions.index', compact('transactions', 'allTransactions'));
+        $totalPendapatan = Transaction::whereIn('status', ['settlement', 'success'])
+            ->sum('total_price');
+
+        $totalPendapatanShort = $this->formatRupiahSingkat($totalPendapatan);
+
+        return view('admin.transactions.index', compact('transactions', 'allTransactions', 'totalPendapatan', 'totalPendapatanShort'));
+    }
+
+    private function formatRupiahSingkat($number)
+    {
+        if ($number >= 1_000_000_000) return 'Rp' . number_format($number / 1_000_000_000, 1) . ' M';
+        if ($number >= 1_000_000) return 'Rp' . number_format($number / 1_000_000, 1) . ' Jt';
+        return 'Rp' . number_format($number, 0, ',', '.');
     }
 }

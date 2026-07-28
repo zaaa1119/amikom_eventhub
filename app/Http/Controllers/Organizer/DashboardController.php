@@ -18,6 +18,7 @@ class DashboardController extends Controller
             ->whereIn('status', ['settlement', 'success'])->count();
         $totalPendapatan = Transaction::whereIn('event_id', $eventIds)
             ->whereIn('status', ['settlement', 'success'])->sum('total_price');
+        $totalPendapatanShort = $this->formatRupiahSingkat($totalPendapatan);
         $avgRating = Review::whereIn('event_id', $eventIds)->avg('rating');
 
         // --- Bagian grafik, sama pola kayak Admin ---
@@ -47,8 +48,22 @@ class DashboardController extends Controller
             ->groupBy('label')->orderBy('label')->pluck('jumlah', 'label');
 
         return view('organizer.dashboard', compact(
-            'partner', 'totalEvent', 'totalTiketTerjual', 'totalPendapatan', 'avgRating',
+            'partner', 'totalEvent', 'totalTiketTerjual', 'totalPendapatan','totalPendapatanShort', 'avgRating',
             'period', 'selectedMonth', 'tiketGrowth', 'pendapatanGrowth'
         ));
     }
+
+    private function formatRupiahSingkat($number)
+    {
+        if ($number >= 1_000_000_000) {
+            return 'Rp' . number_format($number / 1_000_000_000, 1) . ' M';
+        }
+
+        if ($number >= 1_000_000) {
+            return 'Rp' . number_format($number / 1_000_000, 1) . ' Jt';
+        }
+
+        return 'Rp' . number_format($number, 0, ',', '.');
+    }
+
 }

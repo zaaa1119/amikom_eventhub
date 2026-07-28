@@ -13,7 +13,7 @@
     </div>
     <div class="bg-white rounded-2xl shadow p-6">
         <p class="text-slate-400 text-sm font-bold uppercase">Pendapatan</p>
-        <p class="text-3xl font-black mt-2">Rp{{ number_format($totalPendapatan, 0, ',', '.') }}</p>
+        <p class="text-3xl font-black mt-2">{{ $totalPendapatanShort }}</p>
     </div>
     <div class="bg-white rounded-2xl shadow p-6">
         <p class="text-slate-400 text-sm font-bold uppercase">Rating Rata-rata</p>

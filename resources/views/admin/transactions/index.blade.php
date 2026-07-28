@@ -45,7 +45,7 @@ $failedRate = $totalTransactions > 0
     <div class="bg-gradient-to-br from-emerald-200 to-white rounded-2xl border border-emerald-100 shadow-sm p-6">
         <p class="text-[11px] uppercase tracking-widest text-emerald-600">Revenue</p>
         <h2 class="text-2xl font-black text-emerald-700 mt-2">
-            Rp {{ number_format($totalRevenue, 0, ',', '.') }}
+            {{ $totalPendapatanShort }}
         </h2>
         <p class="text-xs text-slate-400 mt-2">Total pendapatan sukses</p>
     </div>
