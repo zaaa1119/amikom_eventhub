@@ -29,8 +29,7 @@ class CheckinController extends Controller
         if ($transaction->event_id !== $event->id) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Tiket ini BUKAN untuk event "' . $event->title . '".',
-                'name' => $transaction->customer_name . ' — tiket ini untuk: ' . $transaction->event->title,
+                'message' => 'Mohon gunakan tiket yang sesuai',
             ]);
         }
 
@@ -41,7 +40,7 @@ class CheckinController extends Controller
         if ($transaction->checked_in_at) {
             return response()->json([
                 'status' => 'warning',
-                'message' => 'Tiket ini SUDAH check-in sebelumnya, pada ' . $transaction->checked_in_at->format('d M Y H:i'),
+                'message' => 'Tiket ini sudah digunakan sebelumnya, pada ' . $transaction->checked_in_at->format('d M Y H:i'),
                 'name' => $transaction->customer_name,
             ]);
         }
@@ -50,8 +49,10 @@ class CheckinController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Check-in berhasil!',
-            'name' => $transaction->customer_name . ' — ' . $event->title . ', ' . $event->date->format('d M Y H:i'),
+            'message' => 'Tiket berhasil di-scan!',
+            'name' => $transaction->customer_name,
+            'event' => $event->title,
+            'datetime' => $event->date->format('d M Y, H:i'),
         ]);
     }
 

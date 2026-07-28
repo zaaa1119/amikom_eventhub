@@ -26,7 +26,7 @@
         if (isProcessing) return;
         isProcessing = true;
 
-        
+
         fetch('{{ route("organizer.checkin.scan", $event) }}', {
                 method: 'POST',
                 headers: {
@@ -40,6 +40,9 @@
             .then(res => res.json())
             .then(data => {
                 showResult(data.status, data.message, data.name ? `Nama: ${data.name}` : '');
+            })
+            .catch(error => {
+                showResult('error', 'Tiket Sudah Digunakan');
             })
             .finally(() => {
                 setTimeout(() => {
