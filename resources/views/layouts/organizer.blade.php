@@ -37,6 +37,10 @@
                 class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('organizer.coupons.*') ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800' }} rounded-xl font-bold transition">
                 Kupon
             </a>
+            <a href="{{ route('organizer.checkin.index') }}"
+                class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('organizer.checkin.*') ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800' }} rounded-xl font-bold transition">
+                Check-in Scanner
+            </a>
         </nav>
         <div class="pt-6 border-t border-indigo-800">
             <form action="{{ route('logout') }}" method="POST">

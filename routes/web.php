@@ -105,4 +105,6 @@ Route::prefix('organizer')
         Route::resource('events', OrganizerEventController::class);
         Route::get('/transactions', [\App\Http\Controllers\Organizer\TransactionController::class, 'index'])->name('transactions.index');
         Route::resource('coupons', \App\Http\Controllers\Organizer\CouponController::class);
+        Route::get('/checkin', [\App\Http\Controllers\Organizer\CheckinController::class, 'index'])->name('checkin.index');
+Route::post('/checkin/scan', [\App\Http\Controllers\Organizer\CheckinController::class, 'scan'])->name('checkin.scan');
     });
