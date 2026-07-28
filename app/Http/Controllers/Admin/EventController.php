@@ -28,16 +28,20 @@ class EventController extends Controller
         return view('admin.events.index', compact('events'));
     }
 
+
     public function create()
     {
         $categories = \App\Models\Category::all();
-        return view('admin.events.create', compact('categories'));
+        $partners = \App\Models\Partner::all();
+        return view('admin.events.create', compact('categories', 'partners'));
     }
+
 
     public function store(\Illuminate\Http\Request $request)
     {
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'partner_id' => 'nullable|exists:partners,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'date' => 'required|date',
@@ -77,13 +81,15 @@ class EventController extends Controller
     public function edit(Event $event)
     {
         $categories = \App\Models\Category::all();
-        return view('admin.events.edit', compact('event', 'categories'));
+        $partners = \App\Models\Partner::all();
+        return view('admin.events.edit', compact('event', 'categories', 'partners'));
     }
 
     public function update(Request $request, Event $event)
     {
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
+            'partner_id' => 'nullable|exists:partners,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'date' => 'required|date',
