@@ -52,9 +52,15 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm12 0h2m-2 4h4m-4-2h2m2-2v6"></path>
                             </svg>
+                        </a>@if($event->certificate_enabled)
+                        <a href="{{ route('organizer.certificates.index', $event) }}"
+                            class="p-2.5 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-600 hover:text-white transition"
+                            title="Kelola Sertifikat">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 14l9-5-9-5-9 5 9 5zm0 0v6m-5-3l5 3 5-3" />
+                            </svg>
                         </a>
-                        @if($event->certificate_enabled)
-                        <a href="{{ route('organizer.certificates.index', $event) }}" class="text-purple-600 font-bold">Sertifikat</a>
                         @endif
 
                     </div>
