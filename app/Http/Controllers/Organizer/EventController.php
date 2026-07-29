@@ -40,6 +40,7 @@ class EventController extends Controller
         ]);
 
         $data['partner_id'] = auth()->user()->partner_id;
+        $data['certificate_enabled'] = $request->boolean('certificate_enabled');
 
         if ($request->hasFile('poster')) {
             $data['poster_path'] = $request->file('poster')->store('poster', 'public');
@@ -80,8 +81,11 @@ class EventController extends Controller
             }
             $data['poster_path'] = $request->file('poster')->store('poster', 'public');
         }
+        
+        $data['certificate_enabled'] = $request->boolean('certificate_enabled');
 
         $event->update($data);
+        
 
         return redirect()->route('organizer.events.index')
             ->with('success', 'Event berhasil diupdate.');

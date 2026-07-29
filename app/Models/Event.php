@@ -15,7 +15,8 @@ class Event extends Model
         'location',
         'price',
         'stock',
-        'poster_path'
+        'poster_path',
+        'certificate_enabled',
     ];
 
     protected $casts = [

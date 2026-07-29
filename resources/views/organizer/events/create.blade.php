@@ -9,7 +9,7 @@
             <label class="block font-bold mb-1 text-sm">Kategori</label>
             <select name="category_id" class="w-full border rounded-xl px-4 py-3" required>
                 @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -42,6 +42,12 @@
         <div>
             <label class="block font-bold mb-1 text-sm">Poster</label>
             <input type="file" name="poster" class="w-full border rounded-xl px-4 py-3">
+        </div>
+        <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
+            <input type="checkbox" name="certificate_enabled" id="certificate_enabled" value="1" class="w-5 h-5">
+            <label for="certificate_enabled" class="font-bold text-sm">
+                Aktifkan E-Sertifikat untuk peserta event ini
+            </label>
         </div>
         <button type="submit" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold">Simpan</button>
     </form>

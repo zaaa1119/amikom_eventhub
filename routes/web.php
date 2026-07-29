@@ -45,7 +45,7 @@ Route::get('/penyelenggara/{partner}', [PartnerController::class, 'show'])->name
 Route::get('/penyelenggara/{partner}/ulasan', [PartnerController::class, 'reviews'])->name('partner.reviews');
 
 Route::get('/event/{event}/ulasan', [EventController::class, 'reviews'])->name('event.reviews');
-
+Route::get('/verify/{code}', [\App\Http\Controllers\CertificateVerifyController::class, 'show'])->name('certificate.verify');
 
 // Checkout (versi terbaru dari main)
 Route::get('/checkout/{event}', [CheckoutController::class, 'create'])
@@ -107,4 +107,8 @@ Route::prefix('organizer')
         Route::resource('coupons', \App\Http\Controllers\Organizer\CouponController::class);
         Route::get('/checkin/{event}', [\App\Http\Controllers\Organizer\CheckinController::class, 'index'])->name('checkin.index');
         Route::post('/checkin/{event}/scan', [\App\Http\Controllers\Organizer\CheckinController::class, 'scan'])->name('checkin.scan');
+        Route::get('/events/{event}/certificates', [\App\Http\Controllers\Organizer\CertificateController::class, 'index'])->name('certificates.index');
+        Route::post('/events/{event}/certificates', [\App\Http\Controllers\Organizer\CertificateController::class, 'send'])->name('certificates.send');
+        Route::get('/certificates/{transaction}/preview', [\App\Http\Controllers\Organizer\CertificateController::class, 'preview'])->name('certificates.preview');
+
     });

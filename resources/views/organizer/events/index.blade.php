@@ -53,6 +53,9 @@
                                     d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm12 0h2m-2 4h4m-4-2h2m2-2v6"></path>
                             </svg>
                         </a>
+                        @if($event->certificate_enabled)
+                        <a href="{{ route('organizer.certificates.index', $event) }}" class="text-purple-600 font-bold">Sertifikat</a>
+                        @endif
 
                     </div>
                 </td>
