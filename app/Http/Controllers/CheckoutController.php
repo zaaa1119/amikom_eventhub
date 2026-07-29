@@ -78,7 +78,7 @@ class CheckoutController extends Controller
             try {
                 \Illuminate\Support\Facades\Mail::to($transaction->customer_email)
                     ->send(new \App\Mail\EventTicketMail($transaction));
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 \Log::error('Gagal mengirim email E-Ticket event gratis: ' . $e->getMessage());
             }
 
@@ -151,7 +151,7 @@ class CheckoutController extends Controller
 
             // Redirect ke halaman antarmuka pembayaran final pelanggan
             return redirect()->route('checkout.payment', $transaction->order_id);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return back()->with('error', 'Gagal memproses pembayaran jaringan: ' . $e->getMessage());
         }
     }
@@ -211,14 +211,14 @@ class CheckoutController extends Controller
                             try {
                                 \Illuminate\Support\Facades\Mail::to($transaction->customer_email)
                                     ->send(new \App\Mail\EventTicketMail($transaction));
-                            } catch (\Exception $e) {
+                            } catch (\Throwable $e) {
                                 \Log::error('Gagal mengirim email E-Ticket secara manual (Bypass): ' . $e->getMessage());
                             }
                         }
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Jika terjadi error dari API Midtrans (transaksi tidak valid), kembalikan ke beranda
             return redirect()->route('home')->with('error', 'Transaksi tidak ditemukan atau gagal diproses oleh sistem pembayaran.');
         }
