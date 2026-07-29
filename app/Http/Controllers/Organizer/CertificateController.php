@@ -52,8 +52,9 @@ class CertificateController extends Controller
                 Mail::to($transaction->customer_email)->send(new CertificateMail($certificate));
                 $certificate->update(['sent_at' => now()]);
                 $sent++;
-            } catch (\Exception $e) {
-                \Log::error('Gagal kirim sertifikat: ' . $e->getMessage());
+            } catch (\Throwable $e) {
+                \Log::error($e);
+                throw $e;
             }
         }
 

@@ -38,24 +38,7 @@ class CertificateMail extends Mailable
     }
 
     public function attachments(): array
-    {
-        $transaction = $this->certificate->transaction;
-        $event = $transaction->event;
-
-        $pdf = Pdf::loadView('certificates.template', [
-            'event' => $event,
-            'participantName' => $transaction->customer_name,
-            'certificateCode' => $this->certificate->certificate_code,
-            'verifyUrl' => route('certificate.verify', $this->certificate->certificate_code),
-        ])->setPaper('a4', 'landscape')
-          ->setOptions([
-              'isRemoteEnabled' => true,
-              'dpi' => 72,
-          ]);
-
-        return [
-            Attachment::fromData(fn () => $pdf->output(), 'sertifikat.pdf')
-                ->withMime('application/pdf'),
-        ];
-    }
+{
+    return [];
+}
 }
